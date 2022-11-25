@@ -1,4 +1,4 @@
 ```sh
-git clone https://github.com/JostP/Numericne-metode
+git clone https://github.com/JostP/POPR-Bot
 ```
 Glej komentarje v programu
