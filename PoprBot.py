@@ -127,6 +127,11 @@ while not finished:
         else:
             print("Gumb ni bil najden: ", button[len(button)-1].text)
 
+        hour = time.localtime(time.time()).tm_hour
+        minute = time.localtime(time.time()).tm_min
+        sec = time.localtime(time.time()).tm_sec
+        formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, sec)
+
         try:
             # Pri enih dogodkih moraš napisat kje si izvedu za ta dogodek, ponavad na nekaterih slabo obiskanih delavnicah iz FDVja, no offence:),
             # pa pol rabs se obkljukat en checkbox, pri športnih aktivnostih tega ni, zato gre program sam naprej če ne najde checkboxa.
@@ -144,11 +149,6 @@ while not finished:
         except:
             print("Neuspešna prijava")
             exit()
-
-        hour = time.localtime(time.time()).tm_hour
-        minute = time.localtime(time.time()).tm_min
-        sec = time.localtime(time.time()).tm_sec
-        formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, sec)
 
         print("Uspešno prijavljen na dogodek :)")
         print("Prijavljen si bil ob: " + formatted_time)
