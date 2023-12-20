@@ -78,7 +78,7 @@ while not finished:
             exit()
 
         uporabnik = driver.find_element("id", 'i0118')
-        uporabnik.send_keys(username)
+        uporabnik.send_keys(password)
 
         try:
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'idSIButton9')))
@@ -88,24 +88,33 @@ while not finished:
 
         button = driver.find_element('id', 'idSIButton9')
         button.click()
-        time.sleep(3)
 
 # Preveri ali je bilo geslo pravilno
         try:
-            element = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.ID, 'passwordError')))
+            element = WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.ID, 'passwordError')))
             print("Napaka pri prijavi!")
             print("Neuspešno prijavljen!")
             exit()
         except TimeoutException:
+            pass
 
-            hour = time.localtime(time.time()).tm_hour
-            minute = time.localtime(time.time()).tm_min
-            sec = time.localtime(time.time()).tm_sec
+        try:
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'idSIButton9')))
+        except TimeoutException:
+            print("Loading took too much time!")
+            exit()
 
-            formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, sec)
+        button = driver.find_element('id', 'idSIButton9')
+        button.click()
 
-            print("Uspešno prijavljen v POPR ob " + formatted_time + "!")
-            print("Čakanje na 6:00:00 za prijavo na dogodek...")
+        hour = time.localtime(time.time()).tm_hour
+        minute = time.localtime(time.time()).tm_min
+        sec = time.localtime(time.time()).tm_sec
+
+        formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, sec)
+
+        print("Uspešno prijavljen v POPR ob " + formatted_time + "!")
+        print("Čakanje na 6:00:00 za prijavo na dogodek...")
 
         while not (hour == 6 and minute == 0):              # Počakaj da bo ura 6:00:00
 
@@ -130,8 +139,8 @@ while not finished:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         button= driver.find_elements(By.CSS_SELECTOR, 'button.btn.btn-primary.btn-sm')
 
-        time.sleep(0.3)
         joinButton = button[len(button) - button_number]
+        time.sleep(0.3)    # Ta zamik rabis da uspesno prescrola do dna strani
 
         if str(joinButton.text) == "Book":
             joinButton.click()
@@ -146,6 +155,15 @@ while not finished:
 
         else:
             print("Gumb ni bil najden: ", button[len(button)-1].text)
+
+        try:
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, str(koda))))
+            button= driver.find_element(By.XPATH, "//button[@type='submit']")
+            button.click()
+
+        except:
+            print("Neuspešna prijava")
+            exit()
 
         hour = time.localtime(time.time()).tm_hour
         minute = time.localtime(time.time()).tm_min
