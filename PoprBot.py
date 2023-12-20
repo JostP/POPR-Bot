@@ -46,59 +46,79 @@ while not finished:
     minute = time.localtime(time.time()).tm_min
     sec = time.localtime(time.time()).tm_sec
 
-    if hour == 5 and minute == 59: # V sistem POPR se bo prijavil minuto prej. Na dogodek se bo prijavil ob 6:00:00
+    if hour == 5 and minute == 58: # V sistem POPR se bo prijavil dve minuti prej. Na dogodek se bo prijavil ob 6:00:00
         options = FirefoxOptions()
-        options.add_argument("--headless") # Program ne bo odprl firefox-a ampak bo firefox tekel v ozadju
+        #options.add_argument("--headless") # Program ne bo odprl firefox-a ampak bo firefox tekel v ozadju
         driver = webdriver.Firefox(options=options)
         driver.get('https://popr.uni-lj.si//student/home.html')
 
         try:
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'username')))
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'i0116')))
         except TimeoutException:
             print("Loading took too much time!")
             exit()
 
-        uporabnik = driver.find_element("id", 'username')
+        uporabnik = driver.find_element("id", 'i0116')
         uporabnik.send_keys(username)
 
-        geslo = driver.find_element("id", 'user_pass')
-        geslo.send_keys(password)
-
-        poslji = driver.find_element('id', 'wp-submit')
-        poslji.click()
-
         try:
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'yesbutton')))
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'idSIButton9')))
         except TimeoutException:
             print("Loading took too much time!")
             exit()
 
-        button = driver.find_element('id', 'yesbutton')
-        text = button.text
+        button = driver.find_element('id', 'idSIButton9')
         button.click()
-        
-        hour = time.localtime(time.time()).tm_hour
-        minute = time.localtime(time.time()).tm_min
-        sec = time.localtime(time.time()).tm_sec
+        time.sleep(2)      # Pocakaj da se nalozi spletna stran, ker drugace javi napako
 
-        formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, sec)
-        
-        print("Uspešno prijavljen v POPR ob " + formatted_time + "!")
-        print("Čakanje na 6:00:00 za prijavo na dogodek...")
+        try:
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'i0118')))
+        except TimeoutException:
+            print("Loading took too much time!")
+            exit()
+
+        uporabnik = driver.find_element("id", 'i0118')
+        uporabnik.send_keys(username)
+
+        try:
+            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'idSIButton9')))
+        except TimeoutException:
+            print("Loading took too much time!")
+            exit()
+
+        button = driver.find_element('id', 'idSIButton9')
+        button.click()
+        time.sleep(3)
+
+# Preveri ali je bilo geslo pravilno
+        try:
+            element = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.ID, 'passwordError')))
+            print("Napaka pri prijavi!")
+            print("Neuspešno prijavljen!")
+            exit()
+        except TimeoutException:
+
+            hour = time.localtime(time.time()).tm_hour
+            minute = time.localtime(time.time()).tm_min
+            sec = time.localtime(time.time()).tm_sec
+
+            formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, sec)
+
+            print("Uspešno prijavljen v POPR ob " + formatted_time + "!")
+            print("Čakanje na 6:00:00 za prijavo na dogodek...")
 
         while not (hour == 6 and minute == 0):              # Počakaj da bo ura 6:00:00
-            
+
             hour = time.localtime(time.time()).tm_hour
             minute = time.localtime(time.time()).tm_min
             sec = time.localtime(time.time()).tm_sec
             formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, sec)
-            
-            time.sleep(0.1)   # Počakaj 0,1 sekunde vsak krog, da se ne vrti na polno
-            print(formatted_time)
+
+            time.sleep(0.02)   # Počakaj 0,02 sekunde vsak krog, da se ne vrti na polno
 
         print("Čas: " + formatted_time)
         print("Začetek prijavljanja v aktivnost...")
-        
+
         driver.get('https://popr.uni-lj.si/student/svc/events.html#/user/event/' + str(koda))
 
         try:
@@ -109,7 +129,7 @@ while not finished:
 
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         button= driver.find_elements(By.CSS_SELECTOR, 'button.btn.btn-primary.btn-sm')
-        
+
         time.sleep(0.3)
         joinButton = button[len(button) - button_number]
 
@@ -131,24 +151,6 @@ while not finished:
         minute = time.localtime(time.time()).tm_min
         sec = time.localtime(time.time()).tm_sec
         formatted_time = "{:02d}:{:02d}:{:02d}".format(hour, minute, sec)
-
-        try:
-            # Pri enih dogodkih moraš napisat kje si izvedu za ta dogodek, ponavad na nekaterih slabo obiskanih delavnicah iz FDVja, no offence:),
-            # pa pol rabs se obkljukat en checkbox, pri športnih aktivnostih tega ni, zato gre program sam naprej če ne najde checkboxa.
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//input[@type='checkbox']")))
-            button= driver.find_element(By.XPATH, "//input[@type='checkbox']")
-            button.click()
-
-        except TimeoutException:
-            print("Neuspešno obkljukan checkbox oziroma ga sploh ni")
-
-        try:
-            button= driver.find_element(By.XPATH, "//button[@type='submit']")
-            button.click()
-
-        except:
-            print("Neuspešna prijava")
-            exit()
 
         print("Uspešno prijavljen na dogodek :)")
         print("Prijavljen si bil ob: " + formatted_time)
