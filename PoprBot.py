@@ -48,7 +48,7 @@ while not finished:
 
     if hour == 5 and minute == 58: # V sistem POPR se bo prijavil dve minuti prej. Na dogodek se bo prijavil ob 6:00:00
         options = FirefoxOptions()
-        #options.add_argument("--headless") # Program ne bo odprl firefox-a ampak bo firefox tekel v ozadju
+        options.add_argument("--headless") # Program ne bo odprl firefox-a ampak bo firefox tekel v ozadju
         driver = webdriver.Firefox(options=options)
         driver.get('https://popr.uni-lj.si//student/home.html')
 
